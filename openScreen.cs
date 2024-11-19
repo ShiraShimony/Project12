@@ -44,8 +44,8 @@ namespace Project12
             // Simulate login validation (You can replace this with actual validation)
             if (username == "admin" && password == "password")
             {
-                Toast.MakeText(this, "Login Successful", ToastLength.Short).Show();
-                // Redirect to another activity after successful login if needed
+                var intent = new Intent(this, typeof(MainPageActivity));
+                StartActivity(intent);
             }
             else
             {
