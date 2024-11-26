@@ -14,27 +14,25 @@ namespace Project12
 {
     internal class Account
     {
-        private int remainder;
         private string id;
         private string name;
-        private int hashed_password;
+        private string hashed_password;
+        private int remainder;
+
+        public static int id_counter;
        
         public int Remainder{ get => remainder; set => remainder = value; }
         public string Id { get => id; set => id = value; }
         public string Name { get => name;   set => name = value; }
-        public int hashed_passward { get => hashed_password; set => hashed_password = value; }
+        public string Hashed_passward { get => hashed_password; set => hashed_password = value; }
 
         [JsonConstructor]
-        public Account (int remainder, string id, string name, int hashed_password)
+        public Account (string id, string name, string hashed_password, int remainder = 5000)
         {
-            Remainder = remainder;
             Id = id;
             Name = name;
-            this.hashed_password = hashed_password;
+            Hashed_passward = hashed_password;
             Remainder = remainder;
-            Id = id;
-            Name = name;
-            this.hashed_passward = hashed_passward;
         }
     }
 }

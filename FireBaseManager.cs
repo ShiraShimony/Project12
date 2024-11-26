@@ -32,19 +32,19 @@ namespace Project12
         //get a list of all the objects in the firebase
         public async Task<List<Account>> GetAllAccounts()
         {
-            return (await firebase.Child("Accounts").OnceAsync<Account>()).Select(item => new Account(
-                item.Object.Price,
-                item.Object.Title,
-                item.Object.SubTitle,
-                item.Object.Bitmap,
-                item.Object.Location)
+            return (await firebase.Child("Accounts").OnceAsync<Account>()).Select
+                (item => new Account(
+                item.Object.Id,
+                item.Object.Name,
+                item.Object.Hashed_passward,
+                item.Object.Remainder)
             ).ToList();
         }
 
         //delete a Account by its title
-        public async Task DeleteAccount(string title)
+        public async Task DeleteAccount(string id)
         {
-            await firebase.Child("Accounts").Child(title).DeleteAsync();
+            await firebase.Child("Accounts").Child(id).DeleteAsync();
         }
 
     }
