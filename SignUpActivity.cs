@@ -47,7 +47,7 @@ namespace Project12
             }
             else
             {
-                if (await firebase.inBase(username))
+                if (await firebase.GetAccount(username) == null)
                 {
                     Toast.MakeText(this, "Invalid username", ToastLength.Short).Show();
                 }

@@ -47,5 +47,11 @@ namespace Project12
             await firebase.Child("Accounts").Child(id).DeleteAsync();
         }
 
+
+        public async Task<bool> CheckPassword(string username, string password)
+        {
+            Account account = await GetAccount(username);
+            return (account.Hashed_passward) == (Utilities.GetHashString(password));
+        }
     }
 }
