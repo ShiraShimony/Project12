@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="0dp"
-    android:background="#FAFAFA">
+    android:background="#edd1f4">
 
     
         <LinearLayout
@@ -20,8 +20,8 @@
                 android:text="Activities"
                 android:layout_marginEnd="0dp"
                 android:layout_weight="1"
-                android:background="#FF6200EE"
-                android:textColor="#FFFFFF"/>
+                android:background="#FFFFFF"
+                android:textColor="#b163c5"/>
 
             <Button
                 android:id="@+id/btnMainScreen"
@@ -30,7 +30,7 @@
                 android:text="Main screen"
                 android:layout_marginEnd="0dp"
                 android:layout_weight="1"
-                android:background="#FF6200EE"
+                android:background="#b163c5"
                 android:textColor="#FFFFFF"/>
 
             <Button
@@ -40,17 +40,63 @@
                 android:text= "Flow"
                 android:layout_marginEnd="0dp"
                 android:layout_weight="1"
-                android:background="#FF6200EE"
+                android:background="#b163c5"
                 android:textColor="#FFFFFF"/>
         </LinearLayout>
 
     <!-- Content for the current screen -->
-    <TextView
-        android:layout_width="wrap_content"
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+    <Button
+                android:id="@+id/btnTransfer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text= "TRANSFER"
+                android:layout_weight="1"
+                android:textSize="24sp"
+                android:layout_marginEnd="0dp"
+                android:background="#9956ab"
+                android:textColor="#FFFFFF"/>
+
+        <Button
+                android:id="@+id/btnRequest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text= "REQUEST"
+                android:layout_weight="1"
+                android:textSize="24sp"
+                android:layout_marginEnd="0dp"
+                android:background="#9956ab"
+                android:textColor="#FFFFFF"/>
+
+     </LinearLayout>
+
+<EditText
+        android:id="@+id/etDest"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Welcome to Screen activities!"
-        android:textSize="24sp"
-        android:layout_gravity="center"
-        android:layout_marginTop="50dp" />
+        android:hint="destenation"
+        android:inputType="text"
+        android:layout_marginBottom="16dp"
+        android:visibility = "gone"/>
+
+    <EditText
+        android:id="@+id/etAmmount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="ammount"
+        android:inputType="text"
+        android:layout_marginBottom="16dp"
+        android:visibility = "gone"/>
+
+    <Button
+        android:id="@+id/btnSend"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Send" 
+        android:visibility = "gone"/>
     
 </LinearLayout>

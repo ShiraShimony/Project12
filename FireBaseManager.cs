@@ -20,7 +20,7 @@ namespace Project12
 
         public async Task AddAccount(Account account)
         {
-            await firebase.Child("Accounts").Child(account.Id).PutAsync<Account>(account);
+            await firebase.Child("Accounts").Child(account.Name).PutAsync<Account>(account);
         }
 
         //get a single object
@@ -34,17 +34,26 @@ namespace Project12
         {
             return (await firebase.Child("Accounts").OnceAsync<Account>()).Select
                 (item => new Account(
-                item.Object.Id,
                 item.Object.Name,
                 item.Object.Hashed_passward,
-                item.Object.Remainder)
+                item.Object.Remainder,
+                item.Object.Transfers)
             ).ToList();
         }
 
         //delete a Account by its title
-        public async Task DeleteAccount(string id)
+        public async Task DeleteAccount(string name)
         {
-            await firebase.Child("Accounts").Child(id).DeleteAsync();
+            await firebase.Child("Accounts").Child(name).DeleteAsync();
+        }
+
+        public async Task Clean()
+        {
+            List<Account> accounts = await GetAllAccounts();
+            foreach (Account a in accounts)
+            {
+                await DeleteAccount(a.Name);
+            }
         }
 
 

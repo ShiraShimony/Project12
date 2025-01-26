@@ -21,7 +21,7 @@ namespace Project12
         Button btnSignUpConfirm;
         FireBaseManager firebase;
 
-        async protected override void OnCreate(Bundle savedInstanceState)
+        protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
@@ -47,18 +47,19 @@ namespace Project12
             }
             else
             {
-                if (await firebase.GetAccount(username) == null)
+                if (await firebase.GetAccount(username) != null)
                 {
                     Toast.MakeText(this, "Invalid username", ToastLength.Short).Show();
                 }
                 else
                 {
-                    await firebase.AddAccount(new Account(Account.id_counter.ToString(), 
-                        username,Utilities.GetHashString(password)));
+                    await firebase.AddAccount(new Account(username, Utilities.GetHashString(password)));
+
                     Toast.MakeText(this, "Sign Up Successful", ToastLength.Short).Show();
+
+                    // After successful sign-up, you can navigate back to the login screen
+                    Finish(); // This will close the current activity and go back to the previous one (Sign In)
                 }
-                // After successful sign-up, you can navigate back to the login screen
-                Finish(); // This will close the current activity and go back to the previous one (Sign In)
             }
         }
     }

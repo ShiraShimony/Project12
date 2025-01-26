@@ -5,12 +5,16 @@ using Android.Widget;
 
 namespace Project12
 {
-    [Activity(Label = "MainPageActivity", MainLauncher = true)]
+    [Activity(Label = "MainPageActivity")]
     public class MainPageActivity : Activity
     {
         Button btnScreen1, btnScreen2, btnScreen3;
+        TextView tvName, tvAuccVal;
+        FireBaseManager firebase;
+        ISharedPreferences sharedPreferences;
+        Account thisAccount;
 
-        protected override void OnCreate(Bundle savedInstanceState)
+        async protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.main_page);
@@ -18,6 +22,16 @@ namespace Project12
             btnScreen1 = FindViewById<Button>(Resource.Id.btnMainScreen);
             btnScreen2 = FindViewById<Button>(Resource.Id.btnScreenActivities);
             btnScreen3 = FindViewById<Button>(Resource.Id.btnScreenFlow);
+            tvName = FindViewById<TextView>(Resource.Id.textViewName);
+            tvAuccVal = FindViewById<TextView>(Resource.Id.textViewAuccVal);
+
+            sharedPreferences = this.GetSharedPreferences("details", FileCreationMode.Private);
+            firebase = new FireBaseManager();
+            thisAccount = await firebase.GetAccount(sharedPreferences.GetString("id", null));
+            //does not handle null option' because no such possibility
+            tvName.Text = "Hello " + thisAccount.Name;
+            tvAuccVal.Text ="Current account: " + thisAccount.Remainder.ToString();
+
 
             // Set click events to navigate between screens
             btnScreen1.Click += (s, e) => {
@@ -34,6 +48,8 @@ namespace Project12
                 var intent = new Intent(this, typeof(FlowPageActivity));
                 StartActivity(intent);
             };
+
+            
         }
     }
 }
