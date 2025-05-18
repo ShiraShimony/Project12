@@ -88,7 +88,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="ammount"
-        android:inputType="text"
+        android:inputType="numberDecimal"
         android:layout_marginBottom="16dp"
         android:visibility = "gone"/>
 

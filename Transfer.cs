@@ -7,25 +7,59 @@ using Android.Widget;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace Project12
 {
-    internal class Transfer
+    public class Transfer
     {
-        private string date, dest;
-        int ammount;
+        public enum RequestStatus { waiting = 0, approved = 1, rejected = 2 };
+        private string date, source, destination;
+        private int ammount;
+        private bool isARequest;
+        private RequestStatus status;
+        public string Date { get => date; set => date = value; }
+        public string Source { get => source; set => source = value; }
+        public string Dest { get => destination; set => destination = value; }
 
-        public Transfer(string date, string dest, int ammount)
+        public int Amount { get => ammount; set => ammount = value; }
+        public bool IsARequest { get => isARequest; set => isARequest = value; }
+        public RequestStatus Status { get => status; set => status = value; }
+
+
+
+        // קונסטרקטור ריק - נדרש עבור Firebase
+        public Transfer() { }
+
+        // קונסטרקטור מלא לשימוש עצמי
+        public Transfer(string date, string source, string dest, int amount, bool isARequest, RequestStatus status)
         {
-            this.date = date;
-            this.dest = dest;
-            this.ammount = ammount;
+            Date = date;
+            Source = source;
+            Dest = dest;
+            Amount = amount;
+            IsARequest = isARequest;
+            Status = status;
         }
 
-        public string Date{ get => date; set => this.date = value; }
-        public string Dest { get => dest; set => this.dest = value; }
-        public int Amount { get => ammount; set => ammount = value; }
-
+        public override string ToString()
+        {
+            string title = "Transfer:", strStatus = "";
+            switch (Status)
+            {
+                case RequestStatus.waiting:
+                    strStatus = "waiting to be approved";
+                    break;
+                case RequestStatus.rejected:
+                    strStatus = "Tranfer was rejected";
+                    break;
+                case RequestStatus.approved:
+                    strStatus = "Successfully executed";
+                    break;
+            }
+            if (IsARequest) title = "Request:";
+            return $"{title}\nDate: {Date}\nDestination: {Dest}\nAmount: {Amount}\nStatus: {strStatus}";
+        }
     }
 }

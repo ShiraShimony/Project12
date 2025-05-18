@@ -37,6 +37,10 @@
     <WarningLevel>4</WarningLevel>
     <AndroidLinkMode>None</AndroidLinkMode>
     <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
+    <AotAssemblies>false</AotAssemblies>
+    <EnableLLVM>false</EnableLLVM>
+    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+    <BundleAssemblies>false</BundleAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -61,12 +65,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Account.cs" />
-    <Compile Include="ActivityActivitiesPage.cs" />
+    <Compile Include="ActivitiesPage.cs" />
+    <Compile Include="Exceptions.cs" />
     <Compile Include="FireBaseManager.cs" />
-    <Compile Include="FlowPageActivity.cs" />
+    <Compile Include="FlowPage.cs" />
     <Compile Include="MainActivity.cs" />
-    <Compile Include="MainPageActivity.cs" />
-    <Compile Include="openScreen.cs" />
+    <Compile Include="MainPage.cs" />
+    <Compile Include="SignIn.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SignUpActivity.cs" />
@@ -116,12 +121,12 @@
     <PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\open_screen.xml">
+    <AndroidResource Include="Resources\layout\sign_in.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\activity_sign_up.xml">
+    <AndroidResource Include="Resources\layout\sign_up.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>
@@ -131,7 +136,7 @@
     </AndroidResource>
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\activityies.xml">
+    <AndroidResource Include="Resources\layout\activityies_page.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>

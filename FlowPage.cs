@@ -12,7 +12,7 @@ using System.Text;
 namespace Project12
 {
     [Activity(Label = "FlowPageActivity")]
-    public class FlowPageActivity : Activity
+    public class FlowPage : Activity
     {
         Button btnScreen1, btnScreen2, btnScreen3;
         protected override void OnCreate(Bundle savedInstanceState)
@@ -33,13 +33,13 @@ namespace Project12
 
             btnScreen1.Click += (s, e) =>
             {
-                var intent = new Intent(this, typeof(MainPageActivity));
+                var intent = new Intent(this, typeof(MainPage));
                 StartActivity(intent);
             };
 
             btnScreen2.Click += (s, e) =>
             {
-                var intent = new Intent(this, typeof(ActivityActivitiesPage));
+                var intent = new Intent(this, typeof(ActivitiesPage));
                 StartActivity(intent);
             };
         }

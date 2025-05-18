@@ -6,7 +6,7 @@ using Android.Widget;
 namespace Project12
 {
     [Activity(Label = "MainPageActivity")]
-    public class MainPageActivity : Activity
+    public class MainPage : Activity
     {
         Button btnScreen1, btnScreen2, btnScreen3;
         TextView tvName, tvAuccVal;
@@ -40,12 +40,12 @@ namespace Project12
             };
 
             btnScreen2.Click += (s, e) => {
-                var intent = new Intent(this, typeof(ActivityActivitiesPage));
+                var intent = new Intent(this, typeof(ActivitiesPage));
                 StartActivity(intent);
             };
 
             btnScreen3.Click += (s, e) => {
-                var intent = new Intent(this, typeof(FlowPageActivity));
+                var intent = new Intent(this, typeof(FlowPage));
                 StartActivity(intent);
             };
 

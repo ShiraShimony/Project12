@@ -13,28 +13,49 @@ using Java.Util;
 
 namespace Project12
 {
-    internal class Account
+    public class Account
     {
+        private string name, hashedPassword;
+        private int reminder;
+        //private Dictionary<string, Transfer> transfers;
 
-        private string name;
-        private string hashed_password;
-        private int remainder;
-        private List<Transfer> transfers;
+        [JsonProperty(NullValueHandling = NullValueHandling.Include)]
+        public string Name { get => name; set => name = value; }
 
-       
-        public int Remainder{ get => remainder; set => remainder = value; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Include)]
+        public string Hashed_password { get => hashedPassword; set => hashedPassword = value; }
 
-        public string Name { get => name;   set => name = value; }
-        public string Hashed_passward { get => hashed_password; set => hashed_password = value; }
-        public List<Transfer> Transfers{ get => transfers; set => transfers = value; }
+        [JsonProperty(NullValueHandling = NullValueHandling.Include)]
+        public int Remainder { get => reminder; set => reminder = value; }
 
-        [JsonConstructor]
-        public Account (string name, string hashed_password, int remainder = 5000, List<Transfer> transfers = null)
+        [JsonProperty(NullValueHandling = NullValueHandling.Include)]
+        public Dictionary<string, Transfer> Transfers { get; set; } = new Dictionary<string, Transfer>();
+
+        public Account(string name, string hashed_password, List<Transfer> transfers, int remainder = 5000)
         {
             Name = name;
-            Hashed_passward = hashed_password;
+            Hashed_password = hashed_password;
             Remainder = remainder;
-            this.transfers = transfers;
+            Transfers = new Dictionary<string, Transfer>();
         }
+
+        public Account() { }
+
+        public override string ToString()
+        {
+            string result = $"Name: {Name}\nRemainder: {Remainder}\n";
+            foreach (var kv in Transfers)
+            {
+                result += $"ID: {kv.Key}\n{kv.Value}\n";
+            }
+            return result;
+        }
+
+        public void addAmmount(int ammunnt)
+        {
+            Remainder += ammunnt;
+        }
+
     }
+
 }

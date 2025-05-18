@@ -14,7 +14,7 @@ using Xamarin.Essentials;
 namespace Project12
 {
     [Activity(Label = "openScreen")]
-    public class openScreen : Activity
+    public class SignIn : Activity
     {
         EditText etUsername;
         EditText etPassword;
@@ -25,7 +25,7 @@ namespace Project12
         async protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
-            SetContentView(Resource.Layout.open_screen);
+            SetContentView(Resource.Layout.sign_in);
 
             etUsername = FindViewById<EditText>(Resource.Id.etUsername);
             etPassword = FindViewById<EditText>(Resource.Id.etPassword);
@@ -72,7 +72,7 @@ namespace Project12
                     editor.PutString("id", username);
                     editor.Commit();
 
-                    var intent = new Intent(this, typeof(MainPageActivity));
+                    var intent = new Intent(this, typeof(MainPage));
                     StartActivity(intent);
                 }
 

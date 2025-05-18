@@ -15,7 +15,7 @@ using Javax.Security.Auth;
 namespace Project12
 {
     [Activity(Label = "ActivityActivitiesPage")]
-    public class ActivityActivitiesPage : Activity
+    public class ActivitiesPage : Activity
     {
         Button btnScreen1, btnScreen2, btnScreen3, btnTrans, btnRec, btnSend;
         EditText etDest, etAmmount;
@@ -26,9 +26,10 @@ namespace Project12
 
         async protected override void OnCreate(Bundle savedInstanceState)
         {
-            Trans = Rec = false;
+            Trans = false;
+            Rec = false;
             base.OnCreate(savedInstanceState);
-            SetContentView(Resource.Layout.activityies);
+            SetContentView(Resource.Layout.activityies_page);
 
             btnScreen1 = FindViewById<Button>(Resource.Id.btnMainScreen);
             btnScreen2 = FindViewById<Button>(Resource.Id.btnScreenActivities);
@@ -54,13 +55,13 @@ namespace Project12
 
             btnScreen1.Click += (s, e) =>
             {
-                var intent = new Intent(this, typeof(MainPageActivity));
+                var intent = new Intent(this, typeof(MainPage));
                 StartActivity(intent);
             };
 
             btnScreen3.Click += (s, e) =>
             {
-                var intent = new Intent(this, typeof(FlowPageActivity));
+                var intent = new Intent(this, typeof(FlowPage));
                 StartActivity(intent);
             };
 
@@ -103,7 +104,7 @@ namespace Project12
             {
                 n = Int32.Parse(etAmmount.Text);
             }
-            catch (FormatException ex)
+            catch (FormatException)
             {
                 Toast.MakeText(this, "Invalid Ammount", ToastLength.Short).Show();
                 return;
@@ -113,23 +114,24 @@ namespace Project12
             {
                 account.Remainder = account.Remainder + n;
                 thisAccount.Remainder = thisAccount.Remainder -n;
-                await firebase.DeleteAccount(account.Name);
-                await firebase.DeleteAccount(thisAccount.Name);
-                await firebase.AddAccount(account);
-                await firebase.AddAccount(thisAccount);
-
 
                 DateTime today = DateTime.Now;
                 string date = today.ToString("MM/dd/yyyy");
 
-                /* List<Transfer> newTransThis = thisAccount.Transfers;
-                if(newTransThis == null) Toast.MakeText(this, "Invalid Ammount", ToastLength.Short).Show();
+                List<Transfer> newTransThis = new List<Transfer>(thisAccount.Transfers);
+                if (newTransThis == null) Toast.MakeText(this, "Invalid Ammount", ToastLength.Short).Show();
                 newTransThis.Add(new Transfer(date, account.Name, -n));
                 thisAccount.Transfers = newTransThis;
 
                 List<Transfer> newTransDest = account.Transfers;
                 newTransDest.Add(new Transfer(date, thisAccount.Name, n));
-                account.Transfers = newTransDest; */
+                account.Transfers = newTransDest;
+
+                await firebase.AddAccount(account);
+                await firebase.AddAccount(thisAccount);
+
+
+                
 
             }
             else

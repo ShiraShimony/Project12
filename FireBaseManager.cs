@@ -14,53 +14,164 @@ using System.Threading.Tasks;
 
 namespace Project12
 {
-    internal class FireBaseManager
+    public class FirebaseManager
     {
-        FirebaseClient firebase = new FirebaseClient("https://project12-f950c-default-rtdb.europe-west1.firebasedatabase.app/");
+        private readonly FirebaseClient _firebaseClient;
 
-        public async Task AddAccount(Account account)
+        public FirebaseManager(string firebaseUrl)
         {
-            await firebase.Child("Accounts").Child(account.Name).PutAsync<Account>(account);
+            _firebaseClient = new FirebaseClient(firebaseUrl);
         }
 
-        //get a single object
-        public async Task<Account> GetAccount(string title)
+        public async Task SaveAccountAsync(Account account)
         {
-            return await firebase.Child("Accounts").Child(title).OnceSingleAsync<Account>();
+            await _firebaseClient
+                .Child("accounts")
+                .Child(account.Name)
+                .PutAsync(account);
         }
 
-        //get a list of all the objects in the firebase
-        public async Task<List<Account>> GetAllAccounts()
+        public async Task<Account> GetAccountAsync(string title)
         {
-            return (await firebase.Child("Accounts").OnceAsync<Account>()).Select
-                (item => new Account(
-                item.Object.Name,
-                item.Object.Hashed_passward,
-                item.Object.Remainder,
-                item.Object.Transfers)
-            ).ToList();
+            var account = await _firebaseClient.Child("accounts").Child(title).OnceSingleAsync<Account>();
+            if (account == null)
+                throw new AccountNotFoundException(title);
+            return account;
         }
 
-        //delete a Account by its title
-        public async Task DeleteAccount(string name)
+        public async Task<List<Account>> GetAccountsAsync()
         {
-            await firebase.Child("Accounts").Child(name).DeleteAsync();
+            var accounts = await _firebaseClient
+                .Child("accounts")
+                .OnceAsync<Account>();
+
+            return accounts.Select(a => a.Object).ToList();
         }
 
-        public async Task Clean()
+        public async Task UpdateAccountAsync(string accountId, Account updatedAccount)
         {
-            List<Account> accounts = await GetAllAccounts();
-            foreach (Account a in accounts)
-            {
-                await DeleteAccount(a.Name);
-            }
+            await _firebaseClient
+                .Child("accounts")
+                .Child(accountId)
+                .PutAsync(updatedAccount);
         }
 
-
-        public async Task<bool> CheckPassword(string username, string password)
+        public async Task DeleteAccountAsync(string accountId)
         {
-            Account account = await GetAccount(username);
-            return (account.Hashed_passward) == (Utilities.GetHashString(password));
+            await _firebaseClient
+                .Child("accounts")
+                .Child(accountId)
+                .DeleteAsync();
+        }
+
+        public async Task SendTransferAsync(string fromName, string toName, int amount, bool isARequest)
+        {
+            if (amount <= 0)
+                throw new InvalidTransferAmountException(amount);
+
+            var fromAcc = await GetAccountAsync(fromName);
+            var toAcc = await GetAccountAsync(toName);
+
+            if (fromAcc.Transfers == null)
+                throw new MissingTransfersException(fromName);
+            if (toAcc.Transfers == null)
+                throw new MissingTransfersException(toName);
+
+            string id = Guid.NewGuid().ToString();
+            var newTransfer = new Transfer(DateTime.Now.ToString("dd/MM/yyyy"), fromName, toName, amount, isARequest, Transfer.RequestStatus.waiting);
+
+            toAcc.Transfers[id] = newTransfer;
+            fromAcc.Transfers[id] = newTransfer;
+
+            toAcc.Transfers = toAcc.Transfers
+                .OrderBy(kv => kv.Value.Status)
+                .ThenBy(kv => DateTime.TryParse(kv.Value.Date, out var dt) ? dt : DateTime.MaxValue)
+                .ToDictionary(kv => kv.Key, kv => kv.Value);
+
+            fromAcc.Transfers = fromAcc.Transfers
+                .OrderBy(kv => kv.Value.Status)
+                .ThenBy(kv => DateTime.TryParse(kv.Value.Date, out var dt) ? dt : DateTime.MaxValue)
+                .ToDictionary(kv => kv.Key, kv => kv.Value);
+
+            await SaveAccountAsync(toAcc);
+            await SaveAccountAsync(fromAcc);
+        }
+
+        public async Task<Transfer?> GetTransferAsync(string accountName, string transferId)
+        {
+            var transfer = await _firebaseClient
+                .Child("accounts")
+                .Child(accountName)
+                .Child("Transfers")
+                .Child(transferId)
+                .OnceSingleAsync<Transfer>();
+
+            if (transfer == null)
+                throw new TransferNotFoundException(transferId, accountName);
+
+            return transfer;
+        }
+
+        public async Task UpdateTransferAsync(string accountName, string transferId, Transfer updatedTransfer)
+        {
+            await _firebaseClient
+                .Child("accounts")
+                .Child(accountName)
+                .Child("Transfers")
+                .Child(transferId)
+                .PutAsync(updatedTransfer);
+        }
+
+        public async Task ApproveTransfer(string transferId, string destId)
+        {
+            var transfer = await GetTransferAsync(destId, transferId);
+
+            if (transfer.Status != Transfer.RequestStatus.waiting)
+                throw new InvalidTransferStatusException(transferId, transfer.Status);
+
+            Account dest = await GetAccountAsync(destId);
+            Account source = await GetAccountAsync(transfer.Source);
+
+            if (dest.Transfers == null)
+                throw new MissingTransfersException(destId);
+            if (source.Transfers == null)
+                throw new MissingTransfersException(transfer.Source);
+
+            int transferCoefficient = transfer.IsARequest ? -1 : 1;
+
+            dest.addAmmount(transfer.Amount * transferCoefficient);
+            source.addAmmount(transfer.Amount * transferCoefficient * -1);
+
+            transfer.Status = Transfer.RequestStatus.approved;
+            dest.Transfers[transferId] = transfer;
+            source.Transfers[transferId] = transfer;
+
+            await UpdateAccountAsync(dest.Name, dest);
+            await UpdateAccountAsync(source.Name, source);
+        }
+
+        public async Task RejectTransferAsync(string transferId, string destId)
+        {
+            var transfer = await GetTransferAsync(destId, transferId);
+
+            if (transfer.Status != Transfer.RequestStatus.waiting)
+                throw new InvalidTransferStatusException(transferId, transfer.Status);
+
+            Account dest = await GetAccountAsync(destId);
+            Account source = await GetAccountAsync(transfer.Source);
+
+            if (dest.Transfers == null)
+                throw new MissingTransfersException(destId);
+            if (source.Transfers == null)
+                throw new MissingTransfersException(transfer.Source);
+
+            transfer.Status = Transfer.RequestStatus.rejected;
+
+            dest.Transfers[transferId] = transfer;
+            source.Transfers[transferId] = transfer;
+
+            await UpdateAccountAsync(dest.Name, dest);
+            await UpdateAccountAsync(source.Name, source);
         }
     }
 }

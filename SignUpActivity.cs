@@ -25,7 +25,7 @@ namespace Project12
         {
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
-            SetContentView(Resource.Layout.activity_sign_up);
+            SetContentView(Resource.Layout.sign_up);
             firebase = new FireBaseManager();
 
             etSignUpUsername = FindViewById<EditText>(Resource.Id.etSignUpUsername);
@@ -47,13 +47,16 @@ namespace Project12
             }
             else
             {
-                if (await firebase.GetAccount(username) != null)
+                bool account_exists = await firebase.GetAccount(username) != null;
+                if (account_exists)
                 {
                     Toast.MakeText(this, "Invalid username", ToastLength.Short).Show();
                 }
                 else
                 {
-                    await firebase.AddAccount(new Account(username, Utilities.GetHashString(password)));
+    
+
+                    await firebase.AddAccount(new Account(username, Utilities.GetHashString(password), new List<Transfer>()));
 
                     Toast.MakeText(this, "Sign Up Successful", ToastLength.Short).Show();
 
