@@ -92,14 +92,16 @@ using Android.Accounts;
 
                 buttonTransfer.Click += delegate
                 {
-                    Toast.MakeText(this, "Transfer clicked", ToastLength.Short).Show();
-                    // TODO: Launch transfer activity
+                    var intent = new Intent(this, typeof(MakeTransfer));
+                    intent.PutExtra("isRequestMode", false);
+                    StartActivity(intent);
                 };
 
                 buttonRequest.Click += delegate
                 {
-                    Toast.MakeText(this, "Request clicked", ToastLength.Short).Show();
-                    // TODO: Launch request activity
+                    var intent = new Intent(this, typeof(MakeTransfer));
+                    intent.PutExtra("isRequestMode", true);
+                    StartActivity(intent);
                 };
 
                 

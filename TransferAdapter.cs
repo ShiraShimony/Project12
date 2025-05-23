@@ -97,8 +97,11 @@ namespace Project12
             string transferId = pair.Key;
             Transfer transfer = pair.Value;
 
+            string transferType = "Transfer";
+            if (transfer.IsARequest) transferType = "Request";
+
             mainText.Text = $"{transfer.Source} → {transfer.Dest} | {transfer.Date}";
-            subText.Text = $"Amount: {transfer.Amount} | Status: {transfer.Status}";
+            subText.Text = $"{transferType} | Amount: {transfer.Amount} | Status: {transfer.Status}";
 
             if (transfer.Dest == accountId && transfer.Status == Transfer.RequestStatus.waiting)
             {

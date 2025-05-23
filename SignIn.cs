@@ -63,7 +63,6 @@ namespace Project12
 
                 if (valid_pass)
                 {
-                    await firebase.SendTransferAsync("0522837833", "0522837832", 330, false);
                     ISharedPreferencesEditor editor = sharedPreferences.Edit();
                     editor.PutString("id", phoneNumber);
                     editor.Commit();
@@ -79,7 +78,7 @@ namespace Project12
                 }
             }
             catch
-            {
+            {   
                 Toast.MakeText(this, "phoneNumber does not exist", ToastLength.Short).Show();
             }
         }
