@@ -6,6 +6,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+using Android.Accounts;
 
     namespace Project12
     {
@@ -25,11 +26,13 @@
             private FirebaseManager firebaseManager;  // Custom manager to interact with Firebase Realtime Database
             private Account account;                  // Current user's account instance
             private ISharedPreferences sharedPreferences;  // SharedPreferences are used for persistent key-value storage between sessions
+            
 
-            /// <summary>
-            /// Called when the activity is created. Initializes UI and loads account data.
-            /// </summary>
-            /// <param name="savedInstanceState">If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied. Otherwise, it is null.</param>
+
+        /// <summary>
+        /// Called when the activity is created. Initializes UI and loads account data.
+        /// </summary>
+        /// <param name="savedInstanceState">If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied. Otherwise, it is null.</param>
             protected override async void OnCreate(Bundle savedInstanceState)
             {
                 base.OnCreate(savedInstanceState);
@@ -71,13 +74,15 @@
                 {
                     account = await firebaseManager.GetAccountAsync(accountId);
 
-                    textViewName.Text = "Name: " + account.Name;
+                    textViewName.Text = "Hello " + account.Name;
                     textViewReminder.Text = "Remainder: " + account.Remainder;
 
                     if (account.Transfers != null)
                     {
 
-                            listViewTransfers.Adapter = new TransferAdapter(this, account.GetWaitingTransfers(), accountId, "https://project12-f950c-default-rtdb.europe-west1.firebasedatabase.app/");
+                            listViewTransfers.Adapter = new TransferAdapter(this, account.GetWaitingTransfers(), accountId,
+                                "https://project12-f950c-default-rtdb.europe-west1.firebasedatabase.app/", UpdateBalance);
+                            
                     }
                 }
                 catch (Exception ex)
@@ -98,6 +103,17 @@
                 };
 
                 
+
+                
             }
+        private async void UpdateBalance()
+        {
+            Account acc = await firebaseManager.GetAccountAsync(account.Id);
+            textViewReminder.Text = "Remainder: " + acc.Remainder;
         }
+
+
+
     }
+
+}

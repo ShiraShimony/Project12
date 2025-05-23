@@ -13,13 +13,17 @@ namespace Project12
         private readonly List<KeyValuePair<string, Transfer>> transfers;
         private readonly string accountId;
         private readonly FirebaseManager firebaseManager;
+        private Action onTransfersChanged;
 
-        public TransferAdapter(Activity context, Dictionary<string, Transfer> transfers, string accountId, string firebaseManager)
+        
+
+        public TransferAdapter(Activity context, Dictionary<string, Transfer> transfers, string accountId, string firebaseManager, Action onTransfersChange)
         {
             this.context = context;
             this.transfers = SortTransfersByDateDescending(transfers);
             this.accountId = accountId;
             this.firebaseManager = new FirebaseManager(firebaseManager);
+            this.onTransfersChanged = onTransfersChange;
         }
 
 
@@ -109,8 +113,10 @@ namespace Project12
                     try
                     {
                         await firebaseManager.ApproveTransfer(transferId, accountId);
+                        Account account = await firebaseManager.GetAccountAsync(accountId);
                         Toast.MakeText(context, "Transfer approved", ToastLength.Short).Show();
                         transfer.Status = Transfer.RequestStatus.approved;
+                        onTransfersChanged?.Invoke();
                         NotifyDataSetChanged();
                     }
                     catch (Exception ex)
@@ -144,6 +150,11 @@ namespace Project12
             }
 
             return view;
+        }
+
+        public void SetOnTransfersChangedCallback(Action callback)
+        {
+            onTransfersChanged = callback;
         }
 
     }

@@ -63,11 +63,11 @@ namespace Project12
 
                 if (valid_pass)
                 {
+                    await firebase.SendTransferAsync("0522837833", "0522837832", 330, false);
                     ISharedPreferencesEditor editor = sharedPreferences.Edit();
                     editor.PutString("id", phoneNumber);
                     editor.Commit();
 
-                    await firebase.SendTransferAsync("0522837833", "0522837832", 300, false);
 
                     var intent = new Intent(this, typeof(MainPage));
                     StartActivity(intent);
