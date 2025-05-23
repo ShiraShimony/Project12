@@ -16,10 +16,10 @@ namespace Project12
     [Activity(Label = "openScreen")]
     public class SignIn : Activity
     {
-        EditText etUsername;
+        EditText etPhoneNumber;
         EditText etPassword;
         Button btnSignIn, btnSignUp;
-        FireBaseManager firebase; 
+        FirebaseManager firebase; 
         ISharedPreferences sharedPreferences;
 
         async protected override void OnCreate(Bundle savedInstanceState)
@@ -27,10 +27,10 @@ namespace Project12
             base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.sign_in);
 
-            etUsername = FindViewById<EditText>(Resource.Id.etUsername);
+            etPhoneNumber = FindViewById<EditText>(Resource.Id.etPhoneNumber);
             etPassword = FindViewById<EditText>(Resource.Id.etPassword);
             btnSignIn = FindViewById<Button>(Resource.Id.btnSignIn);
-            firebase = new FireBaseManager();
+            firebase = new FirebaseManager("https://project12-f950c-default-rtdb.europe-west1.firebasedatabase.app/");
 
 
 
@@ -46,31 +46,28 @@ namespace Project12
 
         async private void BtnSignIn_Click(object sender, System.EventArgs e)
         {
-            string username = etUsername.Text;
+            string phoneNumber = etPhoneNumber.Text;
             string password = etPassword.Text;
 
-            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            if (string.IsNullOrWhiteSpace(phoneNumber) || string.IsNullOrWhiteSpace(password))
             {
-                Toast.MakeText(this, "Please enter both username and password", ToastLength.Short).Show();
+                Toast.MakeText(this, "Please enter both phoneNumber and password", ToastLength.Short).Show();
                 return;
             }
 
 
-            Account account = await firebase.GetAccount(username);
-            if (account == null)
+            try
             {
-                Toast.MakeText(this, "Username does not exist", ToastLength.Short).Show();
-            }
-
-            else
-            {
-                bool valid_pass = await firebase.CheckPassword(username, password);
+                Account account = await firebase.GetAccountAsync(phoneNumber);
+                bool valid_pass = await firebase.CheckPassword(phoneNumber, password);
 
                 if (valid_pass)
                 {
                     ISharedPreferencesEditor editor = sharedPreferences.Edit();
-                    editor.PutString("id", username);
+                    editor.PutString("id", phoneNumber);
                     editor.Commit();
+
+                    await firebase.SendTransferAsync("0522837833", "0522837832", 300, false);
 
                     var intent = new Intent(this, typeof(MainPage));
                     StartActivity(intent);
@@ -80,6 +77,10 @@ namespace Project12
                 {
                     Toast.MakeText(this, "Incurrect password", ToastLength.Short);
                 }
+            }
+            catch
+            {
+                Toast.MakeText(this, "phoneNumber does not exist", ToastLength.Short).Show();
             }
         }
 

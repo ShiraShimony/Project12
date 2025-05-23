@@ -1,55 +1,103 @@
-﻿using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Widget;
+﻿    using Android.App;
+    using Android.OS;
+    using Android.Widget;
+    using Android.Content;
+    using Android.Preferences;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
 
-namespace Project12
-{
-    [Activity(Label = "MainPageActivity")]
-    public class MainPage : Activity
+    namespace Project12
     {
-        Button btnScreen1, btnScreen2, btnScreen3;
-        TextView tvName, tvAuccVal;
-        FireBaseManager firebase;
-        ISharedPreferences sharedPreferences;
-        Account thisAccount;
-
-        async protected override void OnCreate(Bundle savedInstanceState)
+        /// <summary>
+        /// Activity that displays account details including balance and recent transfers.
+        /// Provides UI for initiating transfers, requests, and viewing transfer history.
+        /// </summary>
+        [Activity(Label = "AccountDashboardActivity")]
+        public class MainPage : Activity
         {
-            base.OnCreate(savedInstanceState);
-            SetContentView(Resource.Layout.main_page);
+            private TextView textViewName;      // TextView to display user name
+            private TextView textViewReminder;      // TextView to display account balance
+            private Button buttonTransfer;          // Button to initiate transfer
+            private Button buttonRequest;          // Button to initiate request
+            private ListView listViewTransfers;      // ListView to display transfer items
 
-            btnScreen1 = FindViewById<Button>(Resource.Id.btnMainScreen);
-            btnScreen2 = FindViewById<Button>(Resource.Id.btnScreenActivities);
-            btnScreen3 = FindViewById<Button>(Resource.Id.btnScreenFlow);
-            tvName = FindViewById<TextView>(Resource.Id.textViewName);
-            tvAuccVal = FindViewById<TextView>(Resource.Id.textViewAuccVal);
+            private FirebaseManager firebaseManager;  // Custom manager to interact with Firebase Realtime Database
+            private Account account;                  // Current user's account instance
+            private ISharedPreferences sharedPreferences;  // SharedPreferences are used for persistent key-value storage between sessions
 
-            sharedPreferences = this.GetSharedPreferences("details", FileCreationMode.Private);
-            firebase = new FireBaseManager();
-            thisAccount = await firebase.GetAccount(sharedPreferences.GetString("id", null));
-            //does not handle null option' because no such possibility
-            tvName.Text = "Hello " + thisAccount.Name;
-            tvAuccVal.Text ="Current account: " + thisAccount.Remainder.ToString();
+            /// <summary>
+            /// Called when the activity is created. Initializes UI and loads account data.
+            /// </summary>
+            /// <param name="savedInstanceState">If the activity is being re-initialized after previously being shut down then this Bundle contains the data it most recently supplied. Otherwise, it is null.</param>
+            protected override async void OnCreate(Bundle savedInstanceState)
+            {
+                base.OnCreate(savedInstanceState);
+                SetContentView(Resource.Layout.main_page);
+
+                firebaseManager = new FirebaseManager("https://project12-f950c-default-rtdb.europe-west1.firebasedatabase.app/");
+
+                // Instead of Intent extras, retrieve the account ID from SharedPreferences
+
+                sharedPreferences = this.GetSharedPreferences("details", FileCreationMode.Private);
+                string accountId = sharedPreferences.GetString("id", null);
+
+                if (accountId == null)
+                {
+                    new Android.App.AlertDialog.Builder(this)
+                        .SetTitle("Error")
+                        .SetMessage("Account ID not found. Please log in again.")
+                        .SetPositiveButton("OK", (sender, args) =>
+                        {
+                            Intent intent = new Intent(this, typeof(SignIn));
+                            StartActivity(intent);
+                            Finish(); // close current activity
+                        })
+                        .SetCancelable(false)
+                        .Show();
+
+                    return;
+                }
 
 
-            // Set click events to navigate between screens
-            btnScreen1.Click += (s, e) => {
-                // You are already on Screen 1, so no intent here
-                Toast.MakeText(this, "Already on Screen 1", ToastLength.Short).Show();
-            };
+                // Linking layout components to fields
+                textViewName = FindViewById<TextView>(Resource.Id.textViewName);
+                textViewReminder = FindViewById<TextView>(Resource.Id.textViewReminder);
+                buttonTransfer = FindViewById<Button>(Resource.Id.buttonTransfer);
+                buttonRequest = FindViewById<Button>(Resource.Id.buttonRequest);
+                listViewTransfers = FindViewById<ListView>(Resource.Id.listViewTransfers);
 
-            btnScreen2.Click += (s, e) => {
-                var intent = new Intent(this, typeof(ActivitiesPage));
-                StartActivity(intent);
-            };
+                try
+                {
+                    account = await firebaseManager.GetAccountAsync(accountId);
 
-            btnScreen3.Click += (s, e) => {
-                var intent = new Intent(this, typeof(FlowPage));
-                StartActivity(intent);
-            };
+                    textViewName.Text = "Name: " + account.Name;
+                    textViewReminder.Text = "Remainder: " + account.Remainder;
 
-            
+                    if (account.Transfers != null)
+                    {
+
+                            listViewTransfers.Adapter = new TransferAdapter(this, account.GetWaitingTransfers(), accountId, "https://project12-f950c-default-rtdb.europe-west1.firebasedatabase.app/");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Toast.MakeText(this, "Error: " + ex.Message, ToastLength.Long).Show();
+                }
+
+                buttonTransfer.Click += delegate
+                {
+                    Toast.MakeText(this, "Transfer clicked", ToastLength.Short).Show();
+                    // TODO: Launch transfer activity
+                };
+
+                buttonRequest.Click += delegate
+                {
+                    Toast.MakeText(this, "Request clicked", ToastLength.Short).Show();
+                    // TODO: Launch request activity
+                };
+
+                
+            }
         }
     }
-}

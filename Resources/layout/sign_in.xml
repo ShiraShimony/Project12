@@ -8,10 +8,10 @@
     android:background="#FAFAFA">
 
     <EditText
-        android:id="@+id/etUsername"
+        android:id="@+id/etPhoneNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Username"
+        android:hint="Phone Number"
         android:inputType="text"
         android:layout_marginBottom="16dp" />
 

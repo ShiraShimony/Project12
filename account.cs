@@ -15,15 +15,16 @@ namespace Project12
 {
     public class Account
     {
-        private string name, hashedPassword;
+        private string id, name, hashedPassword;
         private int reminder;
         //private Dictionary<string, Transfer> transfers;
 
         [JsonProperty(NullValueHandling = NullValueHandling.Include)]
+        public string Id { get => id; set => id = value; }
         public string Name { get => name; set => name = value; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Include)]
-        public string Hashed_password { get => hashedPassword; set => hashedPassword = value; }
+        public string HashedPassword { get => hashedPassword; set => hashedPassword = value; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Include)]
         public int Remainder { get => reminder; set => reminder = value; }
@@ -31,10 +32,11 @@ namespace Project12
         [JsonProperty(NullValueHandling = NullValueHandling.Include)]
         public Dictionary<string, Transfer> Transfers { get; set; } = new Dictionary<string, Transfer>();
 
-        public Account(string name, string hashed_password, List<Transfer> transfers, int remainder = 5000)
+        public Account(string id, string name, string hashed_password, int remainder = 5000)
         {
+            Id = id;
             Name = name;
-            Hashed_password = hashed_password;
+            HashedPassword = hashed_password;
             Remainder = remainder;
             Transfers = new Dictionary<string, Transfer>();
         }
@@ -56,6 +58,23 @@ namespace Project12
             Remainder += ammunnt;
         }
 
+        public Dictionary<string, Transfer> GetWaitingTransfers()
+        {
+            Dictionary<string, Transfer> toReturn = new Dictionary<string, Transfer>();
+            if (Transfers != null)
+            {
+                foreach (var pair in Transfers)
+                {
+                    if (pair.Value.Status == Transfer.RequestStatus.waiting)
+                    {
+                        toReturn.Add(pair.Key, pair.Value);
+                    }
+                }
+            }
+
+            return toReturn;
+
+        }
     }
 
 }

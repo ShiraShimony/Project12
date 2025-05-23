@@ -17,19 +17,20 @@ namespace Project12
     [Activity(Label = "SignUpActivity")]
     public class SignUpActivity : Activity
     {
-        EditText etSignUpUsername, etSignUpPassword;
+        EditText etSignUpUsername, etPhoneNumber, etSignUpPassword;
         Button btnSignUpConfirm;
-        FireBaseManager firebase;
+        FirebaseManager firebase;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.sign_up);
-            firebase = new FireBaseManager();
+            firebase = new FirebaseManager("https://project12-f950c-default-rtdb.europe-west1.firebasedatabase.app/");
 
             etSignUpUsername = FindViewById<EditText>(Resource.Id.etSignUpUsername);
             etSignUpPassword = FindViewById<EditText>(Resource.Id.etSignUpPassword);
+            etPhoneNumber = FindViewById<EditText>(Resource.Id.etSignUpPhonrNumber);
             btnSignUpConfirm = FindViewById<Button>(Resource.Id.btnSignUpConfirm);
 
             btnSignUpConfirm.Click += BtnSignUpConfirm_Click;
@@ -38,32 +39,41 @@ namespace Project12
         private async void BtnSignUpConfirm_Click(object sender, System.EventArgs e)
         {
             string username = etSignUpUsername.Text;
+            string phoneNumber = etPhoneNumber.Text;
             string password = etSignUpPassword.Text;
 
             // Add sign-up logic here (e.g., save user data, validation)
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(phoneNumber) || string.IsNullOrEmpty(password))
             {
                 Toast.MakeText(this, "Please fill all fields", ToastLength.Short).Show();
             }
             else
             {
-                bool account_exists = await firebase.GetAccount(username) != null;
-                if (account_exists)
+
+                try
                 {
-                    Toast.MakeText(this, "Invalid username", ToastLength.Short).Show();
+                    await firebase.GetAccountAsync(phoneNumber);
+                    new AlertDialog.Builder(this)
+                        .SetMessage("Invalid phon number").SetPositiveButton("OK", (sender, args) => { }).Show();
+
                 }
-                else
+
+                catch
                 {
-    
+                    {
 
-                    await firebase.AddAccount(new Account(username, Utilities.GetHashString(password), new List<Transfer>()));
 
-                    Toast.MakeText(this, "Sign Up Successful", ToastLength.Short).Show();
+                        await firebase.SaveAccountAsync(new Account(phoneNumber, username, password));
 
-                    // After successful sign-up, you can navigate back to the login screen
-                    Finish(); // This will close the current activity and go back to the previous one (Sign In)
+                        new AlertDialog.Builder(this)
+                            .SetMessage("Signed up seccessfully").SetPositiveButton("OK", (sender, args) => { }).Show();
+
+                        // After successful sign-up, you can navigate back to the login screen
+                        Finish(); // This will close the current activity and go back to the previous one (Sign In)
+                    }
                 }
             }
         }
     }
+
 }

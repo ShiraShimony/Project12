@@ -65,10 +65,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Account.cs" />
-    <Compile Include="ActivitiesPage.cs" />
+    <Compile Include="TransferAdapter.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="FireBaseManager.cs" />
-    <Compile Include="FlowPage.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="MainPage.cs" />
     <Compile Include="SignIn.cs" />
@@ -136,12 +135,7 @@
     </AndroidResource>
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\activityies_page.xml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\layout\flow_page.xml">
+    <AndroidResource Include="Resources\layout\transfer_list_item.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>

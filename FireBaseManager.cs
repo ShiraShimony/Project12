@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Project12
 {
-    public class FirebaseManager
+    internal class FirebaseManager
     {
         private readonly FirebaseClient _firebaseClient;
 
@@ -27,7 +27,7 @@ namespace Project12
         {
             await _firebaseClient
                 .Child("accounts")
-                .Child(account.Name)
+                .Child(account.Id)
                 .PutAsync(account);
         }
 
@@ -64,21 +64,21 @@ namespace Project12
                 .DeleteAsync();
         }
 
-        public async Task SendTransferAsync(string fromName, string toName, int amount, bool isARequest)
+        public async Task SendTransferAsync(string fromId, string toId, int amount, bool isARequest)
         {
             if (amount <= 0)
                 throw new InvalidTransferAmountException(amount);
 
-            var fromAcc = await GetAccountAsync(fromName);
-            var toAcc = await GetAccountAsync(toName);
+            var fromAcc = await GetAccountAsync(fromId);
+            var toAcc = await GetAccountAsync(toId);
 
             if (fromAcc.Transfers == null)
-                throw new MissingTransfersException(fromName);
+                throw new MissingTransfersException(fromId);
             if (toAcc.Transfers == null)
-                throw new MissingTransfersException(toName);
+                throw new MissingTransfersException(toId);
 
             string id = Guid.NewGuid().ToString();
-            var newTransfer = new Transfer(DateTime.Now.ToString("dd/MM/yyyy"), fromName, toName, amount, isARequest, Transfer.RequestStatus.waiting);
+            var newTransfer = new Transfer(DateTime.Now.ToString("dd/MM/yyyy"), fromId, toId, amount, isARequest, Transfer.RequestStatus.waiting);
 
             toAcc.Transfers[id] = newTransfer;
             fromAcc.Transfers[id] = newTransfer;
@@ -97,26 +97,26 @@ namespace Project12
             await SaveAccountAsync(fromAcc);
         }
 
-        public async Task<Transfer?> GetTransferAsync(string accountName, string transferId)
+        public async Task<Transfer?> GetTransferAsync(string accountId, string transferId)
         {
             var transfer = await _firebaseClient
                 .Child("accounts")
-                .Child(accountName)
+                .Child(accountId)
                 .Child("Transfers")
                 .Child(transferId)
                 .OnceSingleAsync<Transfer>();
 
             if (transfer == null)
-                throw new TransferNotFoundException(transferId, accountName);
+                throw new TransferNotFoundException(transferId, accountId);
 
             return transfer;
         }
 
-        public async Task UpdateTransferAsync(string accountName, string transferId, Transfer updatedTransfer)
+        public async Task UpdateTransferAsync(string accountId, string transferId, Transfer updatedTransfer)
         {
             await _firebaseClient
                 .Child("accounts")
-                .Child(accountName)
+                .Child(accountId)
                 .Child("Transfers")
                 .Child(transferId)
                 .PutAsync(updatedTransfer);
@@ -146,8 +146,8 @@ namespace Project12
             dest.Transfers[transferId] = transfer;
             source.Transfers[transferId] = transfer;
 
-            await UpdateAccountAsync(dest.Name, dest);
-            await UpdateAccountAsync(source.Name, source);
+            await UpdateAccountAsync(dest.Id, dest);
+            await UpdateAccountAsync(source.Id, source);
         }
 
         public async Task RejectTransferAsync(string transferId, string destId)
@@ -170,8 +170,15 @@ namespace Project12
             dest.Transfers[transferId] = transfer;
             source.Transfers[transferId] = transfer;
 
-            await UpdateAccountAsync(dest.Name, dest);
-            await UpdateAccountAsync(source.Name, source);
+            await UpdateAccountAsync(dest.Id, dest);
+            await UpdateAccountAsync(source.Id, source);
         }
+
+        public async Task<bool> CheckPassword(string id, string password)
+        {
+            Account account = await GetAccountAsync(id);
+            return (account.HashedPassword) == password;
+        }
+
     }
 }
