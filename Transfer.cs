@@ -16,14 +16,14 @@ namespace Project12
     {
         public enum RequestStatus { waiting = 0, approved = 1, rejected = 2 };
         private string date, source, destination;
-        private int ammount;
+        private double ammount;
         private bool isARequest;
         private RequestStatus status;
         public string Date { get => date; set => date = value; }
         public string Source { get => source; set => source = value; }
         public string Dest { get => destination; set => destination = value; }
 
-        public int Amount { get => ammount; set => ammount = value; }
+        public double Amount { get => ammount; set => ammount = value; }
         public bool IsARequest { get => isARequest; set => isARequest = value; }
         public RequestStatus Status { get => status; set => status = value; }
 
@@ -33,7 +33,7 @@ namespace Project12
         public Transfer() { }
 
         // קונסטרקטור מלא לשימוש עצמי
-        public Transfer(string date, string source, string dest, int amount, bool isARequest, RequestStatus status)
+        public Transfer(string date, string source, string dest, double amount, bool isARequest, RequestStatus status)
         {
             Date = date;
             Source = source;

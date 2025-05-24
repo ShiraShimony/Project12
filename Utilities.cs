@@ -9,6 +9,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace Project12
 {
@@ -28,5 +31,71 @@ namespace Project12
 
             return sb.ToString();
         }
+
+        /*public async Task<double> GetCurrencyToShekelRateAsync(string currency, int amount)
+        {
+            if (currency == "ILS") return amount;
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+
+
+            using (HttpClient client = new HttpClient())
+            {
+                string baseUrl = "http://api.exchangerate.host/";
+                string endPoint = "convert";
+
+                string accessKey = "7306466f48dc75d5c491d54e2ebf1807";
+                //var response = await client.GetAsync(baseUrl + endPoint + "?access_key=" + accessKey + "&from=" + currency + "&to=ILS" + "&amount=" + amount);
+                string url = $"https://api.exchangerate.host/convert?from={currency}&to=ILS&amount={amount}";
+
+                var response = await client.GetAsync(url);
+                if (response.IsSuccessStatusCode)
+                {
+                    string json = await response.Content.ReadAsStringAsync();
+                    JObject obj = JObject.Parse(json);
+
+
+                    
+                    return obj["result"]?.Value<double>() ?? 0;
+                }
+                else
+                {
+                    throw new Exception("Failed to fetch exchange rate.");
+                }
+            }*/
+
+        public async Task<double> GetCurrencyToShekelRateAsync(string currency, int amount)
+        {
+            if (currency == "ILS") return amount;
+
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+
+            using (HttpClient client = new HttpClient())
+            {
+                string url = $"https://api.exchangerate.host/convert?access_key=7306466f48dc75d5c491d54e2ebf1807&from={currency}&to=ILS&amount={amount}";
+
+
+                try
+                {
+                    var response = await client.GetAsync(url);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string json = await response.Content.ReadAsStringAsync();
+                        JObject obj = JObject.Parse(json);
+                        return obj["result"]?.Value<double>() ?? 0;
+                    }
+                    else
+                    {
+                        throw new Exception("HTTP Error: " + response.StatusCode);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("Currency fetch failed: " + ex.Message);
+                    throw;
+                }
+            }
+        }
+
     }
+
 }

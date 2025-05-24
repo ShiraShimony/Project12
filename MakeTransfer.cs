@@ -3,8 +3,11 @@ using Android.Content;
 using Android.OS;
 using Android.Widget;
 using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
-namespace Project12
+namespace Project12 
 {
     [Activity(Label = "MakeTransfer")]
     public class MakeTransfer : Activity
@@ -16,7 +19,8 @@ namespace Project12
         private string currentAccountId;
         private ISharedPreferences sharedPreferences;
         private bool isRequest;
-
+        private string currency;
+        
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -55,14 +59,17 @@ namespace Project12
             {
                 string selected = currencies[e.Position];
                 string symbol = "₪"; // ברירת מחדל
+                currency = "ILS";
 
                 switch (selected)   
                 {
                     case "$ Dollar":
                         symbol = "$";
+                        currency = "USD";
                         break;
                     case "€ Euro":
                         symbol = "€";
+                        currency = "EUR";
                         break;
                 }
 
@@ -87,11 +94,13 @@ namespace Project12
                     Toast.MakeText(this, "Amount must be a positive number", ToastLength.Short).Show();
                     return;
                 }
-
+                Utilities utilities = new Utilities();
+                double toTransfer;
 
                 try
                 {
-                    await firebaseManager.SendTransferAsync(currentAccountId, targetId, amount, isRequest);
+                    toTransfer = await utilities.GetCurrencyToShekelRateAsync(currency, amount);
+                    await firebaseManager.SendTransferAsync(currentAccountId, targetId, toTransfer , isRequest);
                     Toast.MakeText(this, "Transfer sent", ToastLength.Short).Show();
                     Finish();
                 }

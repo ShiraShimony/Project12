@@ -64,7 +64,7 @@ namespace Project12
                 .DeleteAsync();
         }
 
-        public async Task SendTransferAsync(string fromId, string toId, int amount, bool isARequest)
+        public async Task SendTransferAsync(string fromId, string toId, double amount, bool isARequest)
         {
             if (amount <= 0)
                 throw new InvalidTransferAmountException(amount);

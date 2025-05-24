@@ -16,7 +16,7 @@ namespace Project12
     public class Account
     {
         private string id, name, hashedPassword;
-        private int reminder;
+        private double reminder;
         //private Dictionary<string, Transfer> transfers;
 
         [JsonProperty(NullValueHandling = NullValueHandling.Include)]
@@ -27,12 +27,12 @@ namespace Project12
         public string HashedPassword { get => hashedPassword; set => hashedPassword = value; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Include)]
-        public int Remainder { get => reminder; set => reminder = value; }
+        public double Remainder { get => reminder; set => reminder = value; }
 
         [JsonProperty(NullValueHandling = NullValueHandling.Include)]
         public Dictionary<string, Transfer> Transfers { get; set; } = new Dictionary<string, Transfer>();
 
-        public Account(string id, string name, string hashed_password, int remainder = 5000)
+        public Account(string id, string name, string hashed_password, double remainder = 5000)
         {
             Id = id;
             Name = name;
@@ -53,7 +53,7 @@ namespace Project12
             return result;
         }
 
-        public void addAmmount(int ammunnt)
+        public void addAmmount(double ammunnt)
         {
             Remainder += ammunnt;
         }

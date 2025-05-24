@@ -33,7 +33,7 @@ public class TransferNotFoundException : Exception
 
 public class InvalidTransferAmountException : Exception
 {
-    public InvalidTransferAmountException(int amount)
+    public InvalidTransferAmountException(double amount)
         : base($"Invalid transfer amount: {amount}. Amount must be positive.") { }
 }
 
