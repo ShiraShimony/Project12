@@ -8,6 +8,7 @@
     using System.Linq;
 using Android.Accounts;
 using AndroidX.AppCompat.App;
+using Android.Icu.Text;
 
 namespace Project12
 {
@@ -28,6 +29,7 @@ namespace Project12
         private Account account;                  // Current user's account instance
         private ISharedPreferences sharedPreferences;  // SharedPreferences are used for persistent key-value storage between sessions
         private string accountId;
+        private Android.App.AlertDialog dialog;
 
 
 
@@ -117,23 +119,52 @@ namespace Project12
         {
             if (item.ItemId == Resource.Id.action_logout)
             {
-                Toast.MakeText(this, "you selected logout", ToastLength.Long).Show();
+                Android.App.AlertDialog.Builder builder = new Android.App.AlertDialog.Builder(this);
+                builder.SetTitle("");
+                builder.SetMessage("Are you sure you want to logout?");
+                builder.SetCancelable(true);
+                builder.SetPositiveButton("yes", LogOut);
+                builder.SetNegativeButton("No", Cancel);
+                dialog = builder.Create();
+                dialog.Show();
                 return true;
 
             }
             else if (item.ItemId == Resource.Id.action_home)
             {
-                Toast.MakeText(this, "you selected home", ToastLength.Long).Show();
+                Toast.MakeText(this, "you are in page home", ToastLength.Long).Show();
                 return true;
             }
             else
             {
-                Toast.MakeText(this, "you selected Recent Transfers", ToastLength.Long).Show();
+                ISharedPreferencesEditor editor = sharedPreferences.Edit();
+                editor.PutString("id", accountId);
+                editor.Commit();
+                var intent = new Intent(this, typeof(RecentTransfers));
+                StartActivity(intent);
                 return true;
             }
             return base.OnOptionsItemSelected(item);
 
         }
+
+        private void LogOut(object sender, DialogClickEventArgs e)
+        {
+            // Clear shared preferences
+            ISharedPreferencesEditor editor = sharedPreferences.Edit();
+            editor.Clear();
+            editor.Commit();
+
+            Toast.MakeText(this, "Logged out successfully", ToastLength.Short).Show();
+            Finish();
+        }
+
+        private void Cancel(object sender, DialogClickEventArgs e)
+        {
+
+        }
+
+
         protected override async void OnResume()
         {
             base.OnResume();

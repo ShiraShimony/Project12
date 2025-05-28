@@ -19,6 +19,7 @@ namespace Project12
             var intent = new Intent(this, typeof(MainPage));
             StartActivity(intent);
             //SupportActionBar.Hide();
+            
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
@@ -53,6 +54,11 @@ namespace Project12
             }
             return base.OnOptionsItemSelected(item);
 
+        }
+        protected override async void OnResume()
+        {
+            base.OnResume();
+            Finish();
         }
     }
 
