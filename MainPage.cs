@@ -7,6 +7,7 @@
     using System.Collections.Generic;
     using System.Linq;
 using Android.Accounts;
+using AndroidX.AppCompat.App;
 
 namespace Project12
 {
@@ -15,7 +16,7 @@ namespace Project12
     /// Provides UI for initiating transfers, requests, and viewing transfer history.
     /// </summary>
     [Activity(Label = "MainPage")]
-    public class MainPage : Activity
+    public class MainPage : AppCompatActivity
     {
         private TextView textViewName;      // TextView to display user name
         private TextView textViewReminder;      // TextView to display account balance
@@ -37,7 +38,10 @@ namespace Project12
         protected override async void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
+            Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             SetContentView(Resource.Layout.main_page);
+            var intent = new Intent(this, typeof(SignIn));
+            StartActivity(intent);
             //var toolbar = FindViewById<Android.Widget.Toolbar>(Resource.Id.toolbar);
             //SetActionBar(toolbar);
 

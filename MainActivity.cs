@@ -16,7 +16,7 @@ namespace Project12
             Xamarin.Essentials.Platform.Init(this, savedInstanceState);
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.activity_main);
-            var intent = new Intent(this, typeof(SignIn));
+            var intent = new Intent(this, typeof(MainPage));
             StartActivity(intent);
             //SupportActionBar.Hide();
         }

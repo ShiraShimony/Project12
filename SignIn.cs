@@ -68,8 +68,7 @@ namespace Project12
                     editor.Commit();
 
 
-                    var intent = new Intent(this, typeof(MainPage));
-                    StartActivity(intent);
+                    Finish();
                 }
 
                 else
