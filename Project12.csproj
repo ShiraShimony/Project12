@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="Account.cs" />
     <Compile Include="MakeTransfer.cs" />
+    <Compile Include="RecentTransfers.cs" />
     <Compile Include="TransferAdapter.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="FireBaseManager.cs" />
@@ -143,6 +144,16 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\make_transfer.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\menu\a_menu.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\recent_transfers.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>

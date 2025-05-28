@@ -18,7 +18,7 @@ namespace Project12
     public class SignUpActivity : Activity
     {
         EditText etSignUpUsername, etPhoneNumber, etSignUpPassword;
-        Button btnSignUpConfirm;
+        Button btnSignUpConfirm, btnBackButton;
         FirebaseManager firebase;
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -32,8 +32,15 @@ namespace Project12
             etSignUpPassword = FindViewById<EditText>(Resource.Id.etSignUpPassword);
             etPhoneNumber = FindViewById<EditText>(Resource.Id.etSignUpPhonrNumber);
             btnSignUpConfirm = FindViewById<Button>(Resource.Id.btnSignUpConfirm);
+            btnBackButton = FindViewById<Button>(Resource.Id.btnBackButton);
 
             btnSignUpConfirm.Click += BtnSignUpConfirm_Click;
+            btnBackButton.Click += BtnBackButton_Click;
+        }
+
+        private void BtnBackButton_Click(object sender, EventArgs e)
+        {
+            Finish();
         }
 
         private async void BtnSignUpConfirm_Click(object sender, System.EventArgs e)

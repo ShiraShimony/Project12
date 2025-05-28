@@ -14,16 +14,18 @@ namespace Project12
         private readonly string accountId;
         private readonly FirebaseManager firebaseManager;
         private Action onTransfersChanged;
+        private bool onlyView;
 
-        
 
-        public TransferAdapter(Activity context, Dictionary<string, Transfer> transfers, string accountId, string firebaseManager, Action onTransfersChange)
+
+        public TransferAdapter(Activity context, Dictionary<string, Transfer> transfers, string accountId, string firebaseManager,bool onlyView, Action onTransfersChange = null)
         {
             this.context = context;
             this.transfers = SortTransfersByDateDescending(transfers);
             this.accountId = accountId;
             this.firebaseManager = new FirebaseManager(firebaseManager);
-            this.onTransfersChanged = onTransfersChange;
+            this.onTransfersChanged = onTransfersChange; 
+            this.onlyView = onlyView;
         }
 
 
@@ -103,7 +105,7 @@ namespace Project12
             mainText.Text = $"{transfer.Source} → {transfer.Dest} | {transfer.Date}";
             subText.Text = $"{transferType} | Amount: {transfer.Amount} | Status: {transfer.Status}";
 
-            if (transfer.Dest == accountId && transfer.Status == Transfer.RequestStatus.waiting)
+            if (!onlyView && transfer.Dest == accountId && transfer.Status == Transfer.RequestStatus.waiting)
             {
                 approveButton.Visibility = ViewStates.Visible;
                 rejectButton.Visibility = ViewStates.Visible;
@@ -119,7 +121,11 @@ namespace Project12
                         Account account = await firebaseManager.GetAccountAsync(accountId);
                         Toast.MakeText(context, "Transfer approved", ToastLength.Short).Show();
                         transfer.Status = Transfer.RequestStatus.approved;
+
+                        // Notify any subscribers that the list of transfers has changed.
+                        // This safely invokes the delegate only if there are listeners attached.
                         onTransfersChanged?.Invoke();
+
                         NotifyDataSetChanged();
                     }
                     catch (Exception ex)

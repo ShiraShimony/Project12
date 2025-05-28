@@ -2,6 +2,7 @@
 using Android.Content;
 using Android.OS;
 using Android.Runtime;
+using Android.Widget;
 using AndroidX.AppCompat.App;
 
 namespace Project12
@@ -17,6 +18,7 @@ namespace Project12
             SetContentView(Resource.Layout.activity_main);
             var intent = new Intent(this, typeof(SignIn));
             StartActivity(intent);
+            //SupportActionBar.Hide();
         }
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {
@@ -24,5 +26,34 @@ namespace Project12
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
         }
+
+        public override bool OnCreateOptionsMenu(Android.Views.IMenu menu)
+        {
+            MenuInflater.Inflate(Resource.Menu.a_menu, menu);
+            return true;
+        }
+
+        public override bool OnOptionsItemSelected(Android.Views.IMenuItem item)
+        {
+            if (item.ItemId == Resource.Id.action_logout)
+            {
+                Toast.MakeText(this, "you selected logout", ToastLength.Long).Show();
+                return true;
+
+            }
+            else if (item.ItemId == Resource.Id.action_home)
+            {
+                Toast.MakeText(this, "you selected home", ToastLength.Long).Show();
+                return true;
+            }
+            else
+            {
+                Toast.MakeText(this, "you selected Recent Transfers", ToastLength.Long).Show();
+                return true;
+            }
+            return base.OnOptionsItemSelected(item);
+
+        }
     }
+
 }
