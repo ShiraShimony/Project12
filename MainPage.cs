@@ -106,7 +106,7 @@ namespace Project12
         private async void UpdateBalance()
         {
             Account acc = await firebaseManager.GetAccountAsync(account.Id);
-            textViewReminder.Text = "Remainder: " + acc.Remainder;
+            textViewReminder.Text = "Balance: " + acc.Remainder + "₪";
         }
 
         public override bool OnCreateOptionsMenu(Android.Views.IMenu menu)
@@ -173,7 +173,7 @@ namespace Project12
                 account = await firebaseManager.GetAccountAsync(accountId);
 
                 textViewName.Text = "Hello " + account.Name;
-                textViewReminder.Text = "Remainder: " + account.Remainder;
+                textViewReminder.Text = "Balance: " + account.Remainder + "₪";
 
                 if (account.Transfers != null)
                 {

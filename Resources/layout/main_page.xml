@@ -37,8 +37,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Request"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="24dp" />
 
+       <TextView
+        android:id="@+id/textViewTransfers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Waiting transfers"
+        android:textSize="18sp"
+        android:layout_marginBottom="16dp" />
     <!-- List of transfers -->
     <ListView
         android:id="@+id/listViewTransfers"

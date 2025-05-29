@@ -103,7 +103,7 @@ namespace Project12
             if (transfer.IsARequest) transferType = "Request";
 
             mainText.Text = $"{transfer.Source} → {transfer.Dest} | {transfer.Date}";
-            subText.Text = $"{transferType} | Amount: {transfer.Amount} | Status: {transfer.Status}";
+            subText.Text = $"{transferType} | Amount: {transfer.Amount}₪ | Status: {transfer.Status}";
 
             if (!onlyView && transfer.Dest == accountId && transfer.Status == Transfer.RequestStatus.waiting)
             {
